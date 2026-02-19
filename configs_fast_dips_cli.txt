@@ -1,0 +1,235 @@
+# Hyperparameter settings follow FAST-DIPS paper Table 2.
+# T: number of diffusion steps
+# K: ADMM iterations per noise level
+# S: gradient steps per x-update (pixel)
+# rho: ADMM penalty (pixel)
+# epsilon: hard-constraint tolerance (common)
+# K_x, K_z: ADMM iterations for x/z branch (latent)
+# S_x, S_z: gradient steps for x/z update (latent)
+# rho_x, rho_z: ADMM penalties for x/z branch (latent)
+# sigma_switch: branch switch threshold (latent)
+#
+# Usage: run from the folder containing main.py
+
+# =========================================================
+# FFHQ (DDPM prior)
+# =========================================================
+# Super Resolution 4x (down_sampling): T=75, K=3, S=1, rho=200, epsilon=0.05
+python main.py --data test-ffhq --model ffhq256ddpm --task down_sampling --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 75 --K 3 --S 1 --rho 200 --epsilon 0.05 \
+  --name down_sampling_T75 --gpu 0
+
+# Inpaint (Box): T=75, K=3, S=1, rho=200, epsilon=0.05
+python main.py --data test-ffhq --model ffhq256ddpm --task inpainting --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 75 --K 3 --S 1 --rho 200 --epsilon 0.05 \
+  --name inpainting_T75 --gpu 1
+
+# Inpaint (Random): T=75, K=3, S=1, rho=200, epsilon=0.05
+python main.py --data test-ffhq --model ffhq256ddpm --task inpainting_rand --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 75 --K 3 --S 1 --rho 200 --epsilon 0.05 \
+  --name inpainting_rand_T75 --gpu 2
+
+# Gaussian deblurring: T=50, K=3, S=2, rho=200, epsilon=0.05
+python main.py --data test-ffhq --model ffhq256ddpm --task gaussian_blur --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --K 3 --S 2 --rho 200 --epsilon 0.05 \
+  --name gaussian_blur_T50 --gpu 3
+
+# Motion deblurring: T=50, K=3, S=2, rho=200, epsilon=0.05
+python main.py --data test-ffhq --model ffhq256ddpm --task motion_blur --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --K 3 --S 2 --rho 200 --epsilon 0.05 \
+  --name motion_blur_T50 --gpu 4
+
+# Phase retrieval: T=150, K=2, S=5, rho=200, epsilon=0.05
+python main.py --data test-ffhq --model ffhq256ddpm --task phase_retrieval --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/ffhq --num_runs 4 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 150 --K 2 --S 5 --rho 200 --epsilon 0.05 \
+  --name phase_retrieval_T150 --gpu 5
+
+# Nonlinear deblurring: T=150, K=2, S=5, rho=200, epsilon=0.05
+python main.py --data test-ffhq --model ffhq256ddpm --task nonlinear_blur --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 150 --K 2 --S 5 --rho 200 --epsilon 0.05 \
+  --name nonlinear_blur_T150 --gpu 4
+
+# High dynamic range: T=150, K=2, S=5, rho=5, epsilon=0.05
+python main.py --data test-ffhq --model ffhq256ddpm --task hdr --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 150 --K 2 --S 5 --rho 5 --epsilon 0.05 \
+  --name hdr_T150 --gpu 7
+
+# =========================================================
+# ImageNet (DDPM prior)
+# =========================================================
+# Super Resolution 4x (down_sampling): T=75, K=3, S=1, rho=200, epsilon=0.05
+python main.py --data test-imagenet --model imagenet256ddpm --task down_sampling --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 75 --K 3 --S 1 --rho 200 --epsilon 0.05 \
+  --name down_sampling_T75 --gpu 0
+
+# Inpaint (Box): T=75, K=3, S=1, rho=200, epsilon=0.05
+python main.py --data test-imagenet --model imagenet256ddpm --task inpainting --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 75 --K 3 --S 1 --rho 200 --epsilon 0.05 \
+  --name inpainting_T75 --gpu 1
+
+# Inpaint (Random): T=75, K=3, S=1, rho=200, epsilon=0.05
+python main.py --data test-imagenet --model imagenet256ddpm --task inpainting_rand --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 75 --K 3 --S 1 --rho 200 --epsilon 0.05 \
+  --name inpainting_rand_T75 --gpu 2
+
+# Gaussian deblurring: T=50, K=3, S=2, rho=200, epsilon=0.05
+python main.py --data test-imagenet --model imagenet256ddpm --task gaussian_blur --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --K 3 --S 2 --rho 200 --epsilon 0.05 \
+  --name gaussian_blur_T50 --gpu 3
+
+# Motion deblurring: T=50, K=3, S=2, rho=200, epsilon=0.05
+python main.py --data test-imagenet --model imagenet256ddpm --task motion_blur --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --K 3 --S 2 --rho 200 --epsilon 0.05 \
+  --name motion_blur_T50 --gpu 4
+
+# Phase retrieval: T=150, K=2, S=5, rho=200, epsilon=0.05
+python main.py --data test-imagenet --model imagenet256ddpm --task phase_retrieval --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/imagenet --num_runs 4 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 150 --K 2 --S 5 --rho 200 --epsilon 0.05 \
+  --name phase_retrieval_T150 --gpu 5
+
+# Nonlinear deblurring: T=150, K=2, S=5, rho=200, epsilon=0.05
+python main.py --data test-imagenet --model imagenet256ddpm --task nonlinear_blur --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 150 --K 2 --S 5 --rho 200 --epsilon 0.05 \
+  --name nonlinear_blur_T150 --gpu 6
+
+# High dynamic range: T=150, K=2, S=5, rho=5, epsilon=0.05
+python main.py --data test-imagenet --model imagenet256ddpm --task hdr --sampler edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/pixel/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 150 --K 2 --S 5 --rho 5 --epsilon 0.05 \
+  --name hdr_T150 --gpu 7
+
+# =========================================================
+# FFHQ (LDM prior)
+# =========================================================
+# Linear tasks: T=50, (Kx,Kz)=(5,5), (Sx,Sz)=(3,3), (rho_x,rho_z)=(200,200), sigma_switch=1, epsilon=0.05
+# Nonlinear tasks: T=25, (Kx,Kz)=(10,10), (Sx,Sz)=(3,3), (rho_x,rho_z)=(200,200), sigma_switch=5, epsilon=0.05
+
+# Super Resolution 4x (down_sampling)
+python main.py --data test-ffhq --model ffhq256ldm --task down_sampling --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name down_sampling_T50 --gpu 0
+
+# Inpaint (Box)
+python main.py --data test-ffhq --model ffhq256ldm --task inpainting --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name inpainting_T50 --gpu 1
+
+# Inpaint (Random)
+python main.py --data test-ffhq --model ffhq256ldm --task inpainting_rand --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name inpainting_rand_T50 --gpu 2
+
+# Gaussian deblurring
+python main.py --data test-ffhq --model ffhq256ldm --task gaussian_blur --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name gaussian_blur_T50 --gpu 3
+
+# Motion deblurring
+python main.py --data test-ffhq --model ffhq256ldm --task motion_blur --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name motion_blur_T50 --gpu 4
+
+# Phase retrieval (nonlinear)
+python main.py --data test-ffhq --model ffhq256ldm --task phase_retrieval --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/ffhq --num_runs 4 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 25 --sigma_switch 5 --K_x 10 --K_z 10 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name phase_retrieval_T25 --gpu 5
+
+# Nonlinear deblurring (nonlinear)
+python main.py --data test-ffhq --model ffhq256ldm --task nonlinear_blur --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 25 --sigma_switch 5 --K_x 10 --K_z 10 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name nonlinear_blur_T25 --gpu 6
+
+# High dynamic range (nonlinear)
+python main.py --data test-ffhq --model ffhq256ldm --task hdr --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/ffhq --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 25 --sigma_switch 5 --K_x 10 --K_z 10 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name hdr_T25 --gpu 7
+
+# =========================================================
+# ImageNet (LDM prior)
+# =========================================================
+# Super Resolution 4x (down_sampling)
+python main.py --data test-imagenet --model imagenet256ldm --task down_sampling --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name down_sampling_T50 --gpu 0
+
+# Inpaint (Box)
+python main.py --data test-imagenet --model imagenet256ldm --task inpainting --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name inpainting_T50 --gpu 1
+
+# Inpaint (Random)
+python main.py --data test-imagenet --model imagenet256ldm --task inpainting_rand --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name inpainting_rand_T50 --gpu 3
+
+# Gaussian deblurring
+python main.py --data test-imagenet --model imagenet256ldm --task gaussian_blur --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name gaussian_blur_T50 --gpu 3
+
+# Motion deblurring
+python main.py --data test-imagenet --model imagenet256ldm --task motion_blur --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 50 --sigma_switch 1 --K_x 5 --K_z 5 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name motion_blur_T50 --gpu 4
+
+# Phase retrieval (nonlinear)
+python main.py --data test-imagenet --model imagenet256ldm --task phase_retrieval --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/imagenet --num_runs 4 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 25 --sigma_switch 5 --K_x 10 --K_z 10 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name phase_retrieval_T25 --gpu 7
+
+# Nonlinear deblurring (nonlinear)
+python main.py --data test-imagenet --model imagenet256ldm --task nonlinear_blur --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 25 --sigma_switch 5 --K_x 10 --K_z 10 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name nonlinear_blur_T25 --gpu 6
+
+# High dynamic range (nonlinear)
+python main.py --data test-imagenet --model imagenet256ldm --task hdr --sampler latent_edm_FAST_DIPS \
+  --save_dir results/FAST-DIPS/ldm/imagenet --num_runs 1 --batch_size 1 --data_start_id 0 --data_end_id 100 \
+  --T 25 --sigma_switch 5 --K_x 10 --K_z 10 --S_x 3 --S_z 3 \
+  --rho_x 200 --rho_z 200 --epsilon 0.05 \
+  --name hdr_T25 --gpu 7
