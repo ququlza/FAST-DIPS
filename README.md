@@ -5,9 +5,15 @@ Code for the paper [*"FAST‑DIPS: Adjoint‑Free Analytic Steps and Hard‑Cons
 ![FAST-DIPS Paper Figure](/assets/figure1.png)
 ![FAST-DIPS Paper Figure 2](/assets/figure2.png)
 ## Abstract
-$\textbf{FAST-DIPS}$ is a training-free solver for diffusion-prior inverse problems, including nonlinear forward operators. At each noise level, a pretrained denoiser provides an anchor $\mathbf{x}_ {0|t}$; we then perform a hard-constrained proximal correction in measurement space (AWGN) by solving
-$\min_\mathbf{x} \tfrac{1}{2\gamma_t}\|\mathbf{x}-\mathbf{x}_{0|t}\|^2 \ \text{s.t.}\ \|\mathcal{A}(\mathbf{x})-\mathbf{y}\|\le\varepsilon$.
-The correction is implemented via an adjoint-free ADMM with a closed-form projection onto the Euclidean ball and a few steepest-descent updates whose step size is analytic and computable from one VJP and one JVP—or a forward-difference surrogate—followed by decoupled re-annealing. We show this step minimizes a local quadratic model (with backtracking-based descent), any ADMM fixed point satisfies KKT for the hard-constraint, and mode substitution yields a bounded time-marginal error. We also derive a latent variant $\mathcal{A}\mapsto\mathcal{A}\circ\mathcal{D}$ and a one-parameter pixel → latent hybrid schedule. FAST-DIPS delivers comparable or better PSNR/SSIM/LPIPS while being substantially faster, requiring only autodiff access to $\mathcal{A}$ and no hand-coded adjoints or inner MCMC.
+FAST-DIPS is a training-free solver for diffusion-prior inverse problems, including nonlinear forward operators. At each noise level, a pretrained denoiser provides an anchor $\mathbf{x}_{0\mid t}$; we then perform a hard-constrained proximal correction in measurement space (AWGN) by solving:
+
+$$
+\min_{\mathbf{x}} \frac{1}{2\gamma_t}\|\mathbf{x}-\mathbf{x}_{0\mid t}\|^2
+\quad \text{s.t.} \quad
+\|\mathcal{A}(\mathbf{x})-\mathbf{y}\| \le \varepsilon
+$$
+
+The correction is implemented via an adjoint-free ADMM with a closed-form projection onto the Euclidean ball and a few steepest-descent updates whose step size is analytic and computable from one VJP and one JVP, or a forward-difference surrogate, followed by decoupled re-annealing. We show this step minimizes a local quadratic model (with backtracking-based descent), any ADMM fixed point satisfies KKT for the hard-constraint, and mode substitution yields a bounded time-marginal error. We also derive a latent variant $\mathcal{A}\mapsto\mathcal{A}\circ\mathcal{D}$ and a one-parameter pixel-to-latent hybrid schedule. FAST-DIPS delivers comparable or better PSNR/SSIM/LPIPS while being substantially faster, requiring only autodiff access to $\mathcal{A}$ and no hand-coded adjoints or inner MCMC.
 
 ## Installation
 
