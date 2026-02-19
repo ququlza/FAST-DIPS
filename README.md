@@ -30,6 +30,7 @@ pip install -r requirements.txt
 Create the checkpoint directory:
 
 ```bash
+# in FAST-DIPS folder
 mkdir -p checkpoints
 ```
 
@@ -82,6 +83,7 @@ gdown https://drive.google.com/uc?id=1vRoDpIsrTRYZKsOMPNbPcMtFDpCT6Foy -O checkp
 Create the dataset directory:
 
 ```bash
+# in FAST-DIPS folder
 mkdir -p datasets
 ```
 
