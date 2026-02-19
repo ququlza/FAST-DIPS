@@ -52,6 +52,7 @@ omegaconf==2.3.0
 packaging==25.0
 pandas==2.0.3
 pillow==10.3.0
+piq==0.8.0
 platformdirs==4.2.2
 prettytable==3.10.0
 protobuf==4.25.3
