@@ -55,7 +55,7 @@ def _l2_norm_per_sample(t: torch.Tensor):
 
 
 def x_update_autograd(A, x, x0, b, rho, gamma, steps=1, alpha_max=1.0, backtrack=True,
-                      eps: float = 1e-3, use_exact_jvp=False):
+                      eta: float = 1e-3, use_exact_jvp=False):
     """
     Minimize F(x) = (1/(2γ))||x-x0||^2 + (ρ/2)||A(x)-b||^2 by a few steps:
       g  = (x-x0)/γ + ρ J^T (A(x)-b)
@@ -73,21 +73,23 @@ def x_update_autograd(A, x, x0, b, rho, gamma, steps=1, alpha_max=1.0, backtrack
                                          create_graph=False, retain_graph=False, allow_unused=False)[0]
         g = (x - x0) / gamma + rho * g_data
         g = torch.nan_to_num(g)
+        # JVP
         if use_exact_jvp:
             def f(u):
                 return A(u)
-        
+
             _, Jg = torch_func.jvp(f, (x.detach(),), (g.detach(),))
 
             num = _flatten_inner_prod(x - x0, g) / gamma + rho * _flatten_inner_prod(r.detach(), Jg)
             den = _flatten_inner_prod(g, g) / gamma + rho * _flatten_inner_prod(Jg, Jg) + 1e-12
             alpha = (num / den).clamp(0, alpha_max)
+        # FD
         else:
-            A_step = A(x + eps * g)
+            A_step = A(x + eta * g)
             dA = A_step - Ax
-            numer = _flatten_inner_prod(r, dA)
-            denom = _flatten_inner_prod(dA, dA) + 1e-12
-            alpha = (numer / denom) * eps
+            num = (eta**2 / gamma) * _flatten_inner_prod(x - x0, g) + (eta * rho) * _flatten_inner_prod(r, dA)
+            den = (eta**2 / gamma) * _flatten_inner_prod(g, g) + rho * _flatten_inner_prod(dA, dA) + 1e-12
+            alpha = (num / den)
             alpha = torch.nan_to_num(alpha, nan=0.0, posinf=0.0, neginf=0.0)
             alpha = alpha.clamp(min=0, max=alpha_max)
 
