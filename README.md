@@ -1,19 +1,13 @@
 # FAST‑DIPS: Adjoint‑Free Analytic Steps and Hard‑Constrained Likelihood Correction for Diffusion‑Prior Inverse Problems
 
-Code for the paper [*"FAST‑DIPS: Adjoint‑Free Analytic Steps and Hard‑Constrained Likelihood Correction for Diffusion‑Prior Inverse Problems"*](https://openreview.net/forum?id=voMeZVAkKL), published at ICLR 2026.
+[![arXiv](https://img.shields.io/badge/arXiv-2603.01591-b31b1b.svg)](https://arxiv.org/abs/2603.01591) [![OpenReview](https://img.shields.io/badge/OpenReview-Paper-4b44ce.svg)](https://openreview.net/forum?id=voMeZVAkKL) [![ICLR 2026 Poster](https://img.shields.io/badge/ICLR%202026-Poster-1f3a93.svg)](https://iclr.cc/virtual/2026/poster/10006781)
+
+Code for the paper "FAST‑DIPS: Adjoint‑Free Analytic Steps and Hard‑Constrained Likelihood Correction for Diffusion‑Prior Inverse Problems", published at ICLR 2026.
 
 ![FAST-DIPS Paper Figure](/assets/figure1.png)
 ![FAST-DIPS Paper Figure 2](/assets/figure2.png)
 ## Abstract
-FAST-DIPS is a training-free solver for diffusion-prior inverse problems, including nonlinear forward operators. At each noise level, a pretrained denoiser provides an anchor $\mathbf{x}_{0\mid t}$; we then perform a hard-constrained proximal correction in measurement space (AWGN) by solving:
-
-$$
-\min_{\mathbf{x}} \frac{1}{2\gamma_t}\|\mathbf{x}-\mathbf{x}_{0\mid t}\|^2
-\quad \text{s.t.} \quad
-\|\mathcal{A}(\mathbf{x})-\mathbf{y}\| \le \varepsilon
-$$
-
-The correction is implemented via an adjoint-free ADMM with a closed-form projection onto the Euclidean ball and a few steepest-descent updates whose step size is analytic and computable from one VJP and one JVP, or a forward-difference surrogate, followed by decoupled re-annealing. We show this step minimizes a local quadratic model (with backtracking-based descent), any ADMM fixed point satisfies KKT for the hard-constraint, and mode substitution yields a bounded time-marginal error. We also derive a latent variant $\mathcal{A}\mapsto\mathcal{A}\circ\mathcal{D}$ and a one-parameter pixel-to-latent hybrid schedule. FAST-DIPS delivers comparable or better PSNR/SSIM/LPIPS while being substantially faster, requiring only autodiff access to $\mathcal{A}$ and no hand-coded adjoints or inner MCMC.
+Training-free diffusion priors enable inverse-problem solvers without retraining, but for nonlinear forward operators data consistency often relies on repeated derivatives or inner optimization/MCMC loops with conservative step sizes, incurring many iterations and denoiser/score evaluations. We propose a training-free solver that replaces these inner loops with a hard measurement-space feasibility constraint (closed-form projection) and an analytic, model-optimal step size, enabling a small, fixed compute budget per noise level. Anchored at the denoiser prediction, the correction is approximated via an adjoint-free, ADMM-style splitting with projection and a few steepest-descent updates, using one VJP and either one JVP or a forward-difference probe, followed by backtracking and decoupled re-annealing. We prove local model optimality and descent under backtracking for the step-size rule, and derive an explicit KL bound for mode-substitution re-annealing under a local Gaussian conditional surrogate. We also develop a latent variant and a one-parameter pixel→latent hybrid schedule. Experiments achieve competitive PSNR/SSIM/LPIPS with up to 19.5× speedup, without hand-coded adjoints or inner MCMC.
 
 ## Installation
 
