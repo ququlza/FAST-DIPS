@@ -1,6 +1,6 @@
 # FAST‑DIPS: Adjoint‑Free Analytic Steps and Hard‑Constrained Likelihood Correction for Diffusion‑Prior Inverse Problems
 
-[![arXiv](https://img.shields.io/badge/arXiv-2603.01591-b31b1b.svg)](https://arxiv.org/abs/2603.01591) [![OpenReview](https://img.shields.io/badge/OpenReview-Paper-4b44ce.svg)](https://openreview.net/forum?id=voMeZVAkKL) [![ICLR 2026 Poster](https://img.shields.io/badge/ICLR%202026-Poster-1f3a93.svg)](https://iclr.cc/virtual/2026/poster/10006781)
+[![arXiv](https://img.shields.io/badge/arXiv-2603.01591-b31b1b.svg)](https://arxiv.org/abs/2603.01591) [![OpenReview](https://img.shields.io/badge/OpenReview-Paper-4b44ce.svg)](https://openreview.net/forum?id=voMeZVAkKL) [![ICLR 2026 Poster](https://img.shields.io/badge/ICLR%202026-Poster-1f3a93.svg)](https://iclr.cc/virtual/2026/poster/10006781) [![Project Page](https://img.shields.io/static/v1?label=&message=Project%20%7C%20Page&color=0f766e)](https://fast-dips.github.io/)
 
 Code for the paper "FAST‑DIPS: Adjoint‑Free Analytic Steps and Hard‑Constrained Likelihood Correction for Diffusion‑Prior Inverse Problems", published at ICLR 2026.
 
