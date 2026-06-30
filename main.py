@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import statistics
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -41,7 +40,6 @@ from misc import (
     tensor_to_pils,
     save_mp4_video,
 )
-
 
 
 def _flatten_inner_prod(a: torch.Tensor, b: torch.Tensor):
@@ -110,7 +108,7 @@ def x_update_autograd(A, x, x0, b, rho, gamma, steps=1, alpha_max=1.0, backtrack
                 f1 = F_energy(x1)
                 mask = (f1 > f0)
                 tries += 1
-        
+
         x = x - alpha * g
     return x.detach()
 
@@ -162,50 +160,9 @@ def z_update_composite_autograd(decode_fn, operator, z, z0, b, rho, gamma, steps
                 f1 = H_energy(z1)
                 mask = (f1 > f0)
                 tries += 1
-        
+
         z = z - alpha * g
     return z.detach()
-
-
-def pca_torch(X):
-    """Compute PCA eigenvalues of input tensor."""
-    X_centered = X - X.mean(dim=0)
-    cov_matrix = torch.mm(X_centered.T, X_centered) / (X_centered.shape[0] - 1)
-    eigenvalues, _ = torch.linalg.eigh(cov_matrix)
-    return eigenvalues
-
-
-def estimate_noise_level(eigenvalues):
-    """Estimate noise level from PCA eigenvalues."""
-    S = eigenvalues.tolist()
-    while True:
-        mean = sum(S) / len(S)
-        median = statistics.median(S)
-        if abs(mean - median) < 1e-6:
-            break
-        S.remove(max(S))
-    return torch.sqrt(torch.tensor(mean))
-
-
-def extract_patches(image, patch_size):
-    """Extract patches from image tensor."""
-    unfold = torch.nn.functional.unfold(image.unsqueeze(0), kernel_size=patch_size)
-    patches = unfold.squeeze(0).transpose(0, 1)
-    return patches
-
-
-def estimate_noise_level_pca(batch, patch_size=8):
-    """Estimate noise level using PCA for each sample in batch."""
-    batch_size = batch.shape[0]
-    noise_levels = torch.zeros(batch_size)
-
-    for i in range(batch_size):
-        patches = extract_patches(batch[i], patch_size)
-        eigenvalues = pca_torch(patches)
-        noise_level = estimate_noise_level(eigenvalues)
-        noise_levels[i] = noise_level
-
-    return noise_levels.to(batch.device)
 
 
 def get_sampler(**kwargs):
@@ -277,7 +234,6 @@ class FAST_DIPS(nn.Module):
         device = xt.device
         cuda_device = device if device.type == 'cuda' else None
 
-
         for step in pbar:
             sigma, sigma_next = self.diffusion_scheduler.sigma_steps[step], self.diffusion_scheduler.sigma_steps[
                 step + 1]
@@ -323,35 +279,15 @@ class FAST_DIPS(nn.Module):
             x0y = x.to(denoised.dtype)
             x0y = torch.nan_to_num(x0y)
 
-            if step == self.diffusion_scheduler.num_steps - 2 and operator.name != "high_dynamic_range":
-                delta = estimate_noise_level_pca(x0y, patch_size=4)
-                delta = delta.to(x0y.dtype)
+            is_last_step = step == self.diffusion_scheduler.num_steps - 2
 
-                if hasattr(operator, "mask"):
-
-                    if (delta > 0.15).any():
-                        x0y = model.tweedie(x0y, delta)
-                    else:
-                        sig = (0.15 ** 2 - delta ** 2).sqrt()
-                        x0y = x0y + (0.15 - sig).view(-1, 1, 1, 1) * (1 - operator.mask) * torch.randn_like(x0y) \
-                              + sig.view(-1, 1, 1, 1) * torch.randn_like(x0y)
-                        x0y = model.tweedie(x0y, torch.full((x0y.size(0),), 0.15, device=x0y.device, dtype=x0y.dtype))
-                else:
-                    if (delta > 0.15).any():
-                        x0y = model.tweedie(x0y, delta)
-                    else:
-                        sig = (0.15 ** 2 - delta ** 2).sqrt()
-                        x0y = x0y + sig.view(-1, 1, 1, 1) * torch.randn_like(x0y)
-                        x0y = model.tweedie(x0y, torch.full((x0y.size(0),), 0.15, device=x0y.device, dtype=x0y.dtype))
-
-            xt = x0y + sigma_next * torch.randn_like(x0y)
-
-            # if step == self.diffusion_scheduler.num_steps - 2:
-            #     xt = x0hat
+            if is_last_step:
+                xt = x0hat
+            else:
+                xt = x0y + sigma_next * torch.randn_like(x0y)
 
             elapsed = _stop_timer(timer_state)
             total_sampling_time += elapsed
-
 
             x0hat_results = x0y_results = {}
             if evaluator and 'gt' in kwargs:
@@ -521,7 +457,7 @@ class LatentFAST_DIPS(FAST_DIPS):
             else:
                 z0 = z0hat.clone().detach()
                 gamma_t_z = (sigma ** 2)
-                
+
                 with torch.enable_grad():
                     Decz0 = model.decode(z0.detach()).detach().to(dcdtype)
                 v = operator(Decz0)
@@ -551,7 +487,7 @@ class LatentFAST_DIPS(FAST_DIPS):
                     nrm = _l2_norm_per_sample(d).clamp_min(1e-12)
                     scale = (self.epsilon / nrm).clamp_max(1.0)
                     v = torch.where((nrm <= self.epsilon), w, measurement_dc + scale * d)
-                
+
                     u = u + Ax - v
 
             z_star = z0
@@ -595,6 +531,8 @@ class LatentFAST_DIPS(FAST_DIPS):
                 xt = model.decode(zt)
 
         return xt.clamp(-1, 1)
+
+
 def _start_timer(device):
     """Start a CUDA (or CPU fallback) timer and return state."""
     if device is not None and getattr(device, 'type', None) == 'cuda':
@@ -616,6 +554,7 @@ def _stop_timer(timer_state):
         return start_event.elapsed_time(end_event) / 1000.0
     return time.perf_counter() - timer_state[1]
 
+
 def _str2bool(v: str) -> bool:
     if isinstance(v, bool):
         return v
@@ -625,6 +564,7 @@ def _str2bool(v: str) -> bool:
     if v in ("0", "false", "f", "no", "n"):
         return False
     raise argparse.ArgumentTypeError("Expected a boolean.")
+
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="FAST-DIPS")
@@ -865,10 +805,8 @@ def sample_in_batch(sampler, model, x_start, operator, y, evaluator, args, root,
         trajs = Trajectory.merge(trajs)
     if sample_times:
         avg_time_per_sample = sum(sample_times) / len(sample_times)
-        total_sampling_time = sum(sample_times)
     else:
         avg_time_per_sample = 0.0
-        total_sampling_time = 0.0
     print(f"Pure sampling time per sample: {avg_time_per_sample:.3f} s")
     return torch.cat(samples, dim=0), trajs, avg_time_per_sample
 
